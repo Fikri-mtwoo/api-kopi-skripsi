@@ -15,11 +15,10 @@ class CreateTransaksisTable extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_transaksi', 50)->unique();
+            $table->string('kode_transaksi', 50);
             $table->integer('id_produk');
             $table->integer('qty');
             $table->date('tgl_transaksi');
-            $table->string('pemesan', 100);
             $table->timestamps();
         });
     }

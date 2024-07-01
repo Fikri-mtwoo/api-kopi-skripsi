@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\ProdukController;
+use App\Http\Controllers\API\TransaksiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,3 +26,5 @@ Route::get('produk',[ProdukController::class, 'all']);
 Route::get('produk/{id_produk}',[ProdukController::class, 'show']);
 Route::delete('produk/{id_produk}',[ProdukController::class, 'destroy']);
 Route::post('status/{id_produk}',[ProdukController::class, 'status']);
+
+Route::post('transaksi',[TransaksiController::class, 'store']);
