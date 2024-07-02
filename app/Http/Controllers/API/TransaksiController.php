@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Bayar;
 use App\Models\Produk;
 use App\Models\Transaksi;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,11 +16,13 @@ class TransaksiController extends Controller
     public function store(Request $request){
         $custom_rules = [
             'required' => ':attribute wajib diisi.',
-            'array' => ':attribute harus type array'
+            'array' => ':attribute harus type array',
+            'string' => ':attribute harus string.',
         ];
         $valid_data = Validator::make($request->all(), [
             'produk' => 'required|array',
             'qty' => 'required|array',
+            'pesan' => 'required|string',
         ], $custom_rules);
 
         if($valid_data->fails()){
@@ -34,7 +37,7 @@ class TransaksiController extends Controller
 
         try {
             $total = 0;
-            $kode_transaksi = 'TR2024000002';
+            $kode_transaksi = $this->generateInv(count($request->input('produk')));
             foreach ($request->input('produk') as $key => $value) {
                 $transaksis[] = array(
                     'kode_transaksi' => $kode_transaksi,
@@ -52,7 +55,7 @@ class TransaksiController extends Controller
                 'kode_transaksi' => $kode_transaksi,
                 'total_belanja' => $total,
                 'status_bayar' => 'CREATED',
-                'pemesan' => 'some one',
+                'pemesan' => $request->input('pesan'),
                 'id_pegawai' => 1
             ];
             $transaksi = Transaksi::insert($transaksis);
@@ -78,4 +81,10 @@ class TransaksiController extends Controller
     public function all(){}
     public function show(){}
     public function destroy(){}
+
+    protected function generateInv($total){
+        $nomor = str_shuffle(mt_rand(1000, 9999).mt_rand(1000, 9999));
+        $inv = 'TR'.(str_pad((int)$total , 4, '0', STR_PAD_LEFT)).date('Y').$nomor;
+        return $inv;
+    }
 }
