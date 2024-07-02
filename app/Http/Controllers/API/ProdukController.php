@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Produk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,8 +23,8 @@ class ProdukController extends Controller
             'nama' => 'required|string',
             'harga' => 'required|numeric',
             'desc' => 'required|string',
+            'img' => 'required|mimes:pdf,jpg,jpeg,png|max:2048'
         ], $custom_rules);
-        //'img' => 'required|mimes:pdf,jpg,jpeg,png|max:2048'
 
         if($valid_data->fails()){
             return response()->json([
@@ -37,22 +38,26 @@ class ProdukController extends Controller
 
 
         try {
-            $data = [
-                'nama_produk' => $request->input('nama'),
-                'harga_produk' => $request->input('harga'),
-                'desc_produk' => $request->input('desc'),
-                'img_produk' => 'contoh.jpg',
-                'status_produk' => 'T'
-            ];
-
-            $produk = Produk::create($data);
-            return response()->json([
-                'kode' => Response::HTTP_CREATED,
-                'success' => true,
-                'error' =>'',
-                'message' => 'Data berhasil disimpan',
-                'data' => $produk
-            ],200);
+            if($request->file('img')){
+                $path = $request->file('img')->store('img');
+                $pathImg = Storage::path($path);
+                $data = [
+                    'nama_produk' => $request->input('nama'),
+                    'harga_produk' => $request->input('harga'),
+                    'desc_produk' => $request->input('desc'),
+                    'img_produk' => $pathImg,
+                    'status_produk' => 'T'
+                ];
+    
+                $produk = Produk::create($data);
+                return response()->json([
+                    'kode' => Response::HTTP_CREATED,
+                    'success' => true,
+                    'error' =>'',
+                    'message' => 'Data berhasil disimpan',
+                    'data' => $produk
+                ],200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'kode' => Response::HTTP_BAD_REQUEST,
@@ -106,8 +111,8 @@ class ProdukController extends Controller
             'nama' => 'required|string',
             'harga' => 'required|numeric',
             'desc' => 'required|string',
+            'img' => 'required|mimes:pdf,jpg,jpeg,png|max:2048'
         ], $custom_rules);
-        //'img' => 'required|mimes:pdf,jpg,jpeg,png|max:2048'
 
         if($valid_data->fails()){
             return response()->json([
@@ -120,21 +125,40 @@ class ProdukController extends Controller
         }
 
         try {
-            $data = [
-                'nama_produk' => $request->input('nama'),
-                'harga_produk' => $request->input('harga'),
-                'desc_produk' => $request->input('desc'),
-                'img_produk' => 'contoh.jpg',
-            ];
+            $produk = Produk::where('id', $id_produk)->first();
+            if (!$produk) {
+                return response()->json([
+                    'kode' => Response::HTTP_NO_CONTENT,
+                    'success' => false,
+                    'error' => '',
+                    'message' => 'Data tidak ditemukan',
+                    'data' => ''
+                ], 400);
+            }
+            $file = explode('/', $produk->img_produk);
+            $tempValue = 'img/'.$file[1];
+            if($request->file('img')){
+                $path = $request->file('img')->store('img');
+                $pathImg = Storage::path($path);
 
-            $produk = Produk::where('id', $id_produk)->update($data);
-            return response()->json([
-                'kode' => Response::HTTP_OK,
-                'success' => true,
-                'error' =>'',
-                'message' => 'Data berhasil dirubah',
-                'data' => $produk
-            ],200);
+                //update file
+                $produk->nama_produk = $request->input('nama');
+                $produk->harga_produk = $request->input('harga');
+                $produk->desc_produk = $request->input('desc');
+                $produk->img_produk = $pathImg;
+                $produk->save();
+
+                //hapus file lama
+                Storage::delete($tempValue);
+
+                return response()->json([
+                    'kode' => Response::HTTP_OK,
+                    'success' => true,
+                    'error' =>'',
+                    'message' => 'Data berhasil dirubah',
+                    'data' => $produk
+                ],200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'kode' => Response::HTTP_BAD_REQUEST,
@@ -170,7 +194,24 @@ class ProdukController extends Controller
     public function destroy($id_produk){
 
         try {
-            $produk = Produk::where('id', $id_produk)->delete();
+            $produk = Produk::where('id', $id_produk)->first();
+            if (!$produk) {
+                return response()->json([
+                    'kode' => Response::HTTP_NO_CONTENT,
+                    'success' => false,
+                    'error' => '',
+                    'message' => 'Data tidak ditemukan',
+                    'data' => ''
+                ], 400);
+            }
+
+            //hapus data
+            $file = explode('/', $produk->img_produk);
+            $tempValue = 'img/'.$file[1];
+            $produk->delete();
+
+            //hapus file lama
+            Storage::delete($tempValue);
             return response()->json([
                 'kode' => Response::HTTP_OK,
                 'success' => true,
