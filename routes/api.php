@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ProdukController;
 use App\Http\Controllers\API\TransaksiController;
 use Illuminate\Http\Request;
@@ -20,11 +21,16 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::post('produk',[ProdukController::class, 'store']);
-Route::post('produk/{id_produk}',[ProdukController::class, 'edit']);
-Route::get('produk',[ProdukController::class, 'all']);
-Route::get('produk/{id_produk}',[ProdukController::class, 'show']);
-Route::delete('produk/{id_produk}',[ProdukController::class, 'destroy']);
-Route::post('status/{id_produk}',[ProdukController::class, 'status']);
+Route::post('registrasi',[AuthController::class, 'registrasi']);
+Route::post('login',[AuthController::class, 'login']);
 
-Route::post('transaksi',[TransaksiController::class, 'store']);
+Route::group(['middleware' => 'auth:api'], function(){
+    Route::post('produk',[ProdukController::class, 'store']);
+    Route::post('produk/{id_produk}',[ProdukController::class, 'edit']);
+    Route::get('produk',[ProdukController::class, 'all']);
+    Route::get('produk/{id_produk}',[ProdukController::class, 'show']);
+    Route::delete('produk/{id_produk}',[ProdukController::class, 'destroy']);
+    Route::post('status/{id_produk}',[ProdukController::class, 'status']);
+    
+    Route::post('transaksi',[TransaksiController::class, 'store']);
+});
