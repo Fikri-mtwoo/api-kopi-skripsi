@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\PaymenController;
 use App\Http\Controllers\API\ProdukController;
 use App\Http\Controllers\API\TransaksiController;
 use Illuminate\Http\Request;
@@ -33,4 +34,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('status/{id_produk}',[ProdukController::class, 'status']);
     
     Route::post('transaksi',[TransaksiController::class, 'store']);
+
+    Route::post('payment',[PaymenController::class, 'store']);
 });
+Route::post('verify-payment',[PaymenController::class, 'edit']);
