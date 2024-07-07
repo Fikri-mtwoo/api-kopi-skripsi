@@ -109,6 +109,11 @@ class PaymenController extends Controller
         $bayar = Bayar::where('kode_transaksi', $order_id)->first();
         if ($bayar){
             $bayar->status_bayar = $request->transaction_status;
+            if($request->transaction_status == 'cencel' OR $request->transaction_status == 'deny' OR $request->transaction_status == 'expire' OR $request->transaction_status == 'failure') {
+                $bayar->total_bayar = null;
+            }else if($request->transaction_status == 'capture' OR $request->transaction_status == 'settlement'){
+                $bayar->total_bayar = $request->gross_amount;
+            }
             $bayar->save();
         }
     }
