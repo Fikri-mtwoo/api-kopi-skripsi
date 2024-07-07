@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('registrasi',[AuthController::class, 'registrasi']);
 Route::post('login',[AuthController::class, 'login']);
+Route::post('verify-payment',[PaymenController::class, 'edit']);
 
 Route::group(['middleware' => 'auth:api'], function(){
     Route::post('produk',[ProdukController::class, 'store']);
@@ -36,5 +37,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('transaksi',[TransaksiController::class, 'store']);
 
     Route::post('payment',[PaymenController::class, 'store']);
+
+    
+    Route::post('logout',[AuthController::class, 'logout']);
 });
-Route::post('verify-payment',[PaymenController::class, 'edit']);

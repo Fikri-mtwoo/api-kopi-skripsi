@@ -103,7 +103,7 @@ class AuthController extends Controller
                 'kode' => Response::HTTP_CREATED,
                 'success' => true,
                 'error' =>'',
-                'message' => 'Data berhasil disimpan',
+                'message' => 'Berhasil Login',
                 'data' => $user
             ],200);
         } catch (\Throwable $e) {
@@ -115,5 +115,19 @@ class AuthController extends Controller
                 'data' => ''
             ], 400);
         }
+    }
+
+    public function logout(Request $request){
+        $token = $request->user()->token();
+        $token->revoke();
+        $user = auth()->user();
+        $user->tokens()->delete();
+        return response()->json([
+            'kode' => Response::HTTP_OK,
+            'success' => true,
+            'error' =>'',
+            'message' => 'Berhasil Logout',
+            'data' => $token
+        ],200);
     }
 }
