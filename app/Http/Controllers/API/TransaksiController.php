@@ -51,12 +51,17 @@ class TransaksiController extends Controller
                 $total += $produk->harga_produk*$request->input('qty')[$key];
             }
             
+            $pajak = 10;
+            $bayar_pajak = ($total*$pajak)/100;
+            $total = $total+$bayar_pajak;
+
             $data_bayar = [
                 'kode_transaksi' => $kode_transaksi,
                 'total_belanja' => $total,
-                'status_bayar' => 'CREATED',
+                'pajak' => $pajak,
+                'status_bayar' => 'created',
                 'pemesan' => $request->input('pesan'),
-                'id_pegawai' => 1
+                'id_pegawai' => auth()->user()->id
             ];
             $transaksi = Transaksi::insert($transaksis);
             $bayar = Bayar::create($data_bayar);

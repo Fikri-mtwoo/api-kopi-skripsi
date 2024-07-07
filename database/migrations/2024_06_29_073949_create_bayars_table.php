@@ -17,6 +17,7 @@ class CreateBayarsTable extends Migration
             $table->id();
             $table->string('kode_transaksi', 50)->unique();
             $table->integer('total_belanja');
+            $table->integer('pajak');
             $table->integer('total_bayar')->nullable();
             $table->string('status_bayar', 100);
             $table->string('pemesan', 100);
