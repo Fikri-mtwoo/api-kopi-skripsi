@@ -23,6 +23,7 @@ class ProdukController extends Controller
             'nama' => 'required|string',
             'harga' => 'required|numeric',
             'desc' => 'required|string',
+            'jenis' => 'required|string',
             'img' => 'required|mimes:pdf,jpg,jpeg,png|max:2048'
         ], $custom_rules);
 
@@ -45,6 +46,7 @@ class ProdukController extends Controller
                     'nama_produk' => $request->input('nama'),
                     'harga_produk' => $request->input('harga'),
                     'desc_produk' => $request->input('desc'),
+                    'jenis_produk' => $request->input('jenis'),
                     'img_produk' => $pathImg,
                     'status_produk' => 'T'
                 ];
@@ -111,6 +113,7 @@ class ProdukController extends Controller
             'nama' => 'required|string',
             'harga' => 'required|numeric',
             'desc' => 'required|string',
+            'jenis' => 'required|string',
             'img' => 'required|mimes:pdf,jpg,jpeg,png|max:2048'
         ], $custom_rules);
 
@@ -145,6 +148,7 @@ class ProdukController extends Controller
                 $produk->nama_produk = $request->input('nama');
                 $produk->harga_produk = $request->input('harga');
                 $produk->desc_produk = $request->input('desc');
+                $produk->jenis_produk = $request->input('jenis');
                 $produk->img_produk = $pathImg;
                 $produk->save();
 
