@@ -11,4 +11,8 @@ class Jenis extends Model
     protected $table = 'jeniss';
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
+
+    public function produk(){
+        return $this->hasMany(Produk::class);
+    }
 }

@@ -41,7 +41,7 @@ class AuthController extends Controller
                 'name' => $request->input('nama'),
                 'email' => $request->input('email'),
                 'password' => bcrypt($request->input('password')),
-                'role' => 'kasir',
+                'role' => 'pegawai',
             ];
             $user = User::create($data);
             return response()->json([
@@ -53,12 +53,12 @@ class AuthController extends Controller
             ],200);
         } catch (\Throwable $e) {
             return response()->json([
-                'kode' => Response::HTTP_BAD_REQUEST,
+                'kode' => Response::HTTP_BAD_GATEWAY,
                 'success' => false,
                 'error' => $e,
                 'message' => 'Data tidak valid',
                 'data' => ''
-            ], 400);
+            ], 502);
         }
     }
 
@@ -88,12 +88,12 @@ class AuthController extends Controller
         try {
             if (!auth()->attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
                 return response()->json([
-                    'kode' => Response::HTTP_BAD_REQUEST,
+                    'kode' => Response::HTTP_NOT_FOUND,
                     'success' => false,
                     'error' => '',
                     'message' => 'Username atau Password salah',
                     'data' => ''
-                ], 400);
+                ], 404);
             }
             //generate token
             $token = auth()->user()->createToken('API Token Kedai Kopi')->accessToken;
@@ -108,12 +108,12 @@ class AuthController extends Controller
             ],200);
         } catch (\Throwable $e) {
             return response()->json([
-                'kode' => Response::HTTP_BAD_REQUEST,
+                'kode' => Response::HTTP_BAD_GATEWAY,
                 'success' => false,
                 'error' => $e,
                 'message' => 'Data tidak valid',
                 'data' => ''
-            ], 400);
+            ], 502);
         }
     }
 

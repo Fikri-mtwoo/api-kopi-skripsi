@@ -22,6 +22,7 @@ class CreateBayarsTable extends Migration
             $table->string('status_bayar', 100);
             $table->string('pemesan', 100);
             $table->integer('id_pegawai');
+            $table->text('url_bayar')->nullable();
             $table->timestamps();
         });
     }

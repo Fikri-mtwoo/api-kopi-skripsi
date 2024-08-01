@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bayar;
+use App\Models\Chart;
 use App\Models\Produk;
 use App\Models\Transaksi;
 use Illuminate\Support\Str;
@@ -64,6 +65,7 @@ class TransaksiController extends Controller
                 'id_pegawai' => auth()->user()->id
             ];
             $transaksi = Transaksi::insert($transaksis);
+            $chart = Chart::where('user', auth()->user()->id)->delete();
             $bayar = Bayar::create($data_bayar);
             return response()->json([
                 'kode' => Response::HTTP_CREATED,
@@ -83,8 +85,56 @@ class TransaksiController extends Controller
         }
     }
     public function edit(){}
-    public function all(){}
-    public function show(){}
+    public function all(){
+        try {
+            $transaksi = Bayar::where('id_pegawai', auth()->user()->id)->orderBy('id', 'DESC')->get();
+            return response()->json([
+                'kode' => Response::HTTP_OK,
+                'success' => true,
+                'error' =>'',
+                'message' => 'Data ditemukan',
+                'data' => $transaksi
+            ],200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'kode' => Response::HTTP_BAD_GATEWAY,
+                'success' => false,
+                'error' => $e,
+                'message' => 'Data tidak ditemukan',
+                'data' => ''
+            ],502);
+        }
+    }
+    public function show($kode_transaksi){
+        try {
+            $transaksi = Transaksi::with('prod')->where('kode_transaksi', $kode_transaksi)->get();
+            if($transaksi) {
+                return response()->json([
+                    'kode' => Response::HTTP_OK,
+                    'success' => true,
+                    'error' =>'',
+                    'message' => 'Data ditemukan',
+                    'data' => $transaksi
+                ],200);
+            }else{
+                return response()->json([
+                    'kode' => Response::HTTP_NOT_FOUND,
+                    'success' => false,
+                    'error' =>'',
+                    'message' => 'Data tidak ditemukan',
+                    'data' => ''
+                ],404);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'kode' => Response::HTTP_BAD_GATEWAY,
+                'success' => false,
+                'error' => $e,
+                'message' => 'Data tidak ditemukan',
+                'data' => ''
+            ],502);
+        }
+    }
     public function destroy(){}
 
     protected function generateInv($total){

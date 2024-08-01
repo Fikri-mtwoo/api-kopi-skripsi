@@ -12,4 +12,16 @@ class Produk extends Model
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
     // protected $hidden = ['id'];
+
+    public function jenis(){
+        return $this->belongsTo(Jenis::class, 'jenis_produk', 'id');
+    }
+
+    public function chart(){
+        return $this->hasOne(Chart::class);
+    }
+
+    public function transaksi(){
+        return $this->hasOne(Transaksi::class);
+    }
 }
